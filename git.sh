@@ -1,5 +1,5 @@
 git pull #pour recuperer les fichiers, mieux vaut le faire avant de faire une maj
-git add # <fichiers> pour ajouter les fichiers au repos
+git add/rm # <fichiers> pour ajouter/supprimer les fichiers au repos
 git commit -m "<message>" # idique la "maj"
 git push #pour mettre les fichiers en ligne
 git status #etat actuel des fichiers, modification...
