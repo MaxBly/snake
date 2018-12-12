@@ -10,9 +10,9 @@ OFILES = main.o \
 
 functions.o : functions.h
 
-game.o : game.h
+game.o : game.h main.h
 
-main.o : functions.h
+main.o : functions.h main.h
 
 snake : $(OFILES)
 		$(CC) $(CFLAGS) -o snake $(OFILES) -lgraph

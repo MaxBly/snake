@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "functions.h"
 #include "game.h"
+#include "main.h"
 
 void ggrid(int w, int h, int c, int r, _c color) {
     gchoose(color); // on choisit la couleur
@@ -16,3 +17,10 @@ void ggrid(int w, int h, int c, int r, _c color) {
 }
 
 int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; } // permet de recuperer les coodronné graphique a partir de la HEIGT/WIDTH, du coef GRID et de la case k
+
+void ghead(int x, int y, _c c) {
+    int xx = ggetCoords(WIDTH, GRID, x);
+    int yy = ggetCoords(HEIGHT, GRID, y);
+    gchoose(c);
+    gfillRect(xx, yy, GRID, GRID);
+}

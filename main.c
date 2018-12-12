@@ -3,12 +3,7 @@
 #include <stdio.h>
 #include "functions.h"
 #include "game.h"
-
-#define     WIDTH   600 // largeur de la fenetre
-#define     HEIGHT  450 // hauteur
-#define     GRID    15  // taille de la grille (unité arbitraire / quotient)
-
-#define     DEBUG
+#include "main.h"
 
 int main(void) {
     gbegin();
@@ -16,7 +11,7 @@ int main(void) {
     gclear(grgb(0,0,0));
 
     int running = 1; // tant que running est a 1 le programme continue
-    int x = 0, y = 0, //x, y correspodent a la grille 
+    int x = 0, y = 0, //x, y correspodent a la grille
         xx = 0, yy = 0; // xx, yy correspondent aux coordonnée de pixel
     //gchoose(grgb(255,0,0));
 
@@ -24,10 +19,7 @@ int main(void) {
         gscreen(1); //basculage sur l'ecran fictif
         gclear(grgb(0,0,0)); //clear l'ecran
         ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(255,255,255)); // afficher la grille
-        gchoose(grgb(255,0,0)); // choisir la couleur rouge
-        xx = ggetCoords(WIDTH, GRID, x); //connaitre la position graphique de la case x
-        yy = ggetCoords(HEIGHT, GRID, y);
-        gfillRect(xx, yy, GRID, GRID); //afficher un carré rouge aux positions x, y
+        ghead(x, y, grgb(255,0,0)); //afficher un carré rouge aux positions x, y
         #ifdef DEBUG
             printf("[%d|%d][%d|%d]\n", x, xx, y, yy);
         #endif /* DEBUG */
