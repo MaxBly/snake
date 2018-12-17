@@ -26,7 +26,6 @@ int main(void) {
 
 
 
-
         if (gdoKey()) { // si une touche est dispo
             switch(ggetKey()) { //on teste la touche dispo, les variable XK_... sont definit dans <graph.h>
                 case XK_Escape: running = 0; break;
