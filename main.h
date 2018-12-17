@@ -1,15 +1,4 @@
-
-typedef struct Coords Coords;
-
-struct Coords {
-    int x;
-    int y;
-};
-
-struct List {
-    int n;
-    Coords *Coords;
-};
+#include "game.h"
 
 #ifndef     HEIGHT
 #define     HEIGHT  450 // hauteur
@@ -23,4 +12,4 @@ struct List {
 #define     GRID    15  // taille de la grille (unité arbitraire / quotient)
 #endif   /* GRID */
 
-#define     DEBUG
+/* #define     DEBUG */

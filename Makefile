@@ -12,7 +12,7 @@ functions.o : functions.h
 
 game.o : game.h main.h
 
-main.o : functions.h main.h
+main.o : functions.h main.h game.h
 
 snake : $(OFILES)
 		$(CC) $(CFLAGS) -o snake $(OFILES) -lgraph
