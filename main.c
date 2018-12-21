@@ -8,22 +8,18 @@
 int main(void) {
     gbegin();
     ginitWindow(100,100,WIDTH,HEIGHT);
-    gclear(grgb(0,0,0));
+    gclear(grgb(45,45,45));
     List* list = NULL; // initialisation de la Liste List qui contient le serpents voire "game.c"
     int running = 1; // tant que running est a 1 le programme continue
     int x = 0, y = 0, //x, y correspodent a la grille
         xx = 0, yy = 0; // xx, yy correspondent aux coordonnée de pixel
-    list = pushBot(list, x, y);//5 premiers blocs du serpent
-    list = pushBot(list, x, y+1);
-    list = pushBot(list, x, y+2);
-    list = pushBot(list, x, y+4);
-    list = pushBot(list, x, y+3);
+    list = pushBot(list, x, y);//premier bloc du serpent
     //gchoose(grgb(255,0,0));
 
     while (running) {
         gscreen(1); //basculage sur l'ecran fictif
         gclear(grgb(0,0,0)); //clear l'ecran
-        ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(255,255,255)); // afficher la grille
+        ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(60,60,255)); // afficher la grille
         //ghead(x, y, grgb(255,0,0)); //afficher un carré rouge aux positions x, y
         #ifdef DEBUG
             printf("[%d|%d][%d|%d]\n", x, xx, y, yy);
