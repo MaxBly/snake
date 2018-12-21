@@ -39,10 +39,10 @@ int main(void) {
             list = pushTop(list, x, y);   //rajoute la nouvelle tete du serpent
             list = popBot (list);         //supprimer la queue du serpent
 
-            if ((x == apple.x) && (y == apple.y)) {
-                apple.x = (rand() % WIDTH /GRID);
+            if ((x == apple.x) && (y == apple.y)) { // si une pomme est manger on la remplace et on rallonge le serpent
+                apple.x = (rand() % WIDTH /GRID); // on regénére les coordonnées
                 apple.y = (rand() % HEIGHT/GRID);
-                list = pushBot(list, x, y);
+                list = pushBot(list, x, y); // on ralonge le serpent
             }
             if (list->next != NULL) { // on ne prend pas en compte la tete du serpent
                 List* cur = list->next;
