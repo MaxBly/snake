@@ -10,8 +10,15 @@ struct List {
     List* next;
 };
 
+typedef struct Apple Apple;
+struct Apple {
+    int x;
+    int y;
+};
+
 void    ggrid       (int, int, int, int, _c);
 int     ggetCoords  (int, int, int);
+double  ggetDist    (int, int, int, int);
 
 List*   pushTop (List*, int, int);
 List*   pushBot (List*, int, int);

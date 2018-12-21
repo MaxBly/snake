@@ -6,6 +6,7 @@
 #include "main.h"
 
 int main(void) {
+    srand(gms());
     gbegin();
     ginitWindow(100,100,WIDTH,HEIGHT);
     gclear(grgb(45,45,45));
@@ -15,6 +16,10 @@ int main(void) {
 
     List* list = NULL;              // initialisation de la Liste List qui contient le serpents voire "game.c"
     list = pushBot(list, x, y);     //premier bloc du serpent
+
+    Apple apple;
+    apple.x = (rand() % WIDTH /GRID);
+    apple.y = (rand() % HEIGHT/GRID);
 
     unsigned long next = gms() + CYCLE;
 
@@ -34,6 +39,11 @@ int main(void) {
             list = pushTop(list, x, y);   //rajoute la nouvelle tete du serpent
             list = popBot (list);         //supprimer la queue du serpent
 
+            if ((x == apple.x) && (y == apple.y)) {
+                apple.x = (rand() % WIDTH /GRID);
+                apple.y = (rand() % HEIGHT/GRID);
+                list = pushBot(list, x, y);
+            }
             if (list->next != NULL) { // on ne prend pas en compte la tete du serpent
                 List* cur = list->next;
                 for(; cur->next != NULL; cur = cur->next) { // on parcours tout le serpent sauf la tete
@@ -48,6 +58,7 @@ int main(void) {
         }
 
         disp(list); // affiche l'intégralité de serpent
+        ghead(apple.x, apple.y, grgb(255, 0, 0)); // affiche la pomme
 
         if (gdoKey()) { // si une touche est dispo
             switch(ggetKey()) { //on teste la touche dispo, les variable XK_... sont definit dans <graph.h>
