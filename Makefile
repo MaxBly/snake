@@ -15,7 +15,7 @@ game.o : game.h main.h
 main.o : functions.h main.h game.h
 
 snake : $(OFILES)
-		$(CC) $(CFLAGS) -o snake $(OFILES) -lgraph
+		$(CC) $(CFLAGS) -o snake $(OFILES) -lgraph -lm
 
 clean :
 		-rm -f $(OFILES) snake

@@ -12,4 +12,9 @@
 #define     GRID    15  // taille de la grille (unité arbitraire / quotient)
 #endif   /* GRID */
 
-/* #define     DEBUG */
+#ifndef     CYCLE
+#define     CYCLE   100000L // vitesse de recharge du snake
+#endif   /* CYCLE */
+
+
+//#define     DEBUG

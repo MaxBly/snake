@@ -1,6 +1,7 @@
 #include <graph.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "functions.h"
 #include "main.h"
 #include "game.h"
@@ -18,6 +19,9 @@ void ggrid(int w, int h, int c, int r, _c color) {
 
 // permet de recuperer les coodronné graphique a partir de la HEIGT/WIDTH, du coef GRID et de la case k
 int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; }
+
+//retourne la distance entre de points (permet de caclculer si on est sur une pomme ou pas, ou si on se mange soit meme)
+double ggetDist(int x, int y, int xx, int yy) { return sqrt((xx+1 - x+1)*(xx+1 - x+1) + (yy+1 - y+1)*(yy+1 - y+1)); } // formule de la distance entre deux points du plan
 
 void ghead(int x, int y, _c c) {
     int xx = ggetCoords(WIDTH, GRID, x);
@@ -40,7 +44,7 @@ List* pushTop(List* list, int x, int y) {
         new->next = list;
         new->prev = NULL;
     }
-        return new;
+    return new;
 }
 
 //ajoute les coordonnées x,y a la fin de la liste
