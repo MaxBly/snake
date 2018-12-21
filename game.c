@@ -17,7 +17,7 @@ void ggrid(int w, int h, int c, int r, _c color) {
 }
 
 // permet de recuperer les coodronné graphique a partir de la HEIGT/WIDTH, du coef GRID et de la case k
-int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; } 
+int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; }
 
 void ghead(int x, int y, _c c) {
     int xx = ggetCoords(WIDTH, GRID, x);
