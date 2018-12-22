@@ -21,7 +21,7 @@ void ggrid(int w, int h, int c, int r, _c color) {
 int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; }
 
 //retourne la distance entre de points (permet de caclculer si on est sur une pomme ou pas, ou si on se mange soit meme)
-double ggetDist(int x, int y, int xx, int yy) { return sqrt((xx+1 - x+1)*(xx+1 - x+1) + (yy+1 - y+1)*(yy+1 - y+1)); } // formule de la distance entre deux points du plan
+double ggetDist(int x, int y, int xx, int yy) { return sqrt(pow(xx - x, 2) + pow(yy - y, 2)); } // formule de la distance entre deux points du plan
 
 void ghead(int x, int y, _c c) {
     int xx = ggetCoords(WIDTH, GRID, x);
@@ -30,10 +30,24 @@ void ghead(int x, int y, _c c) {
     gfillRect(xx, yy, GRID, GRID);
 }
 
+_c wheel(int p) {
+    if(p < 85) {
+        return grgb(p*3, 255-p*3, 0);
+    } else if(p < 170) {
+        p -= 85;
+        return grgb(255-p*3, 0, p*3);
+    } else {
+        p -= 170;
+        return grgb(0, p*3, 255-p*3);
+    }
+}
+
+
 //ajoute les coordonnées x,y au debut de la liste
-List* pushTop(List* list, int x, int y) {
+List* pushTop(List* list, int x, int y, _c c) {
     List* new;
     new = (List*) malloc(sizeof(List));
+    new->c = c;
     new->x = x;
     new->y = y;
     if (list == NULL) {
@@ -48,9 +62,10 @@ List* pushTop(List* list, int x, int y) {
 }
 
 //ajoute les coordonnées x,y a la fin de la liste
-List* pushBot(List* list, int x, int y) {
+List* pushBot(List* list, int x, int y, _c c) {
     List* new;
     new = (List*) malloc(sizeof(List));
+    new->c = c;
     new->x = x;
     new->y = y;
 
@@ -83,18 +98,19 @@ List* popBot(List* list) {
 }
 
 //supprime le p ième bloc de la liste
-List* pop(List* list, int x, int y, int p) {
+List* pop(List* list, int x, int y, _c c, int p) {
 
-    if (p == 0 || list == NULL) return pushTop(list, x, y);
+    if (p == 0 || list == NULL) return pushTop(list, x, y, c);
 
     List* cur = list;
     int k = 0;
     for(; (cur->next != NULL) && (k<p-1); cur = cur->next) {k++;};
 
-    if(cur->next == NULL) return pushBot(list, x, y);
+    if(cur->next == NULL) return pushBot(list, x, y, c);
 
     List* new = (List*) malloc(sizeof(List));
     List* tmp = cur->next;
+    new->c = c;
     new->x = x;
     new->y = y;
     tmp->prev = new;
@@ -111,7 +127,7 @@ void disp(List* list) {
         printf("[");
     #endif DEBUG
     for (; cur != NULL; cur = cur->next) {
-        ghead(cur->x, cur->y,grgb(255,255,255));
+        ghead(cur->x, cur->y, cur->c);
         #ifdef DEBUG
             printf("{x: %d, y: %d}", cur->x, cur->y);
             if (cur->next!=NULL) printf(", ");
