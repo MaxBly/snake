@@ -41,7 +41,7 @@ int main(void) {
             total += 10;
             if (total>255) total = 0;
             list = pushTop(list, x, y, wheel(total));   //rajoute la nouvelle tete du serpent
-            list = popBot (list);         //supprimer la queue du serpent
+            list = popBot (list);                       //supprimer la queue du serpent
 
             if ((x == apple.x) && (y == apple.y)) { // si une pomme est manger on la remplace et on rallonge le serpent
                 apple.x = (rand() % WIDTH /GRID); // on regénére les coordonnées
@@ -67,8 +67,8 @@ int main(void) {
         ghead(apple.x, apple.y, grgb(255, 0, 0)); // affiche la pomme
 
         if (gdoKey()) { // si une touche est dispo
-            switch(ggetKey()) { //on teste la touche dispo, les variable XK_... sont definit dans <graph.h>
-                case XK_Escape: running = 0;                                break;
+            switch(ggetKey()) { // on teste la touche dispo, les variable XK_... sont definit dans <graph.h>
+                case XK_Escape: running = 0;                                break; // running passe a 0 donc on quitte le jeu
                 case XK_space:  list = pushTop(list, x, y, wheel(total));   break; //'temporaire' ajoute juste un bloc au serpent pour le ralonger pour les tests
                 case XK_Left:   if (dir_x !=  1) dir_x = -1, dir_y = 0;     break; //on change la diréction seulement si ce n'est pas la direction opposé
                 case XK_Right:  if (dir_x != -1) dir_x =  1, dir_y = 0;     break;
