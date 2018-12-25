@@ -3,16 +3,16 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-typedef couleur _c;
+typedef couleur col;
 
 void            gbegin       ();
 void            gclose       ();
 int             ginitWindow  (int, int, int, int);
 void            gscreen      (int);
-void            gchoose      (_c);
-void            gclear       (_c);
-_c              gcolor       (char*);
-_c              grgb         (unsigned char, unsigned char, unsigned char);
+void            gchoose      (col);
+void            gclear       (col);
+col             gcolor       (char*);
+col             grgb         (unsigned char, unsigned char, unsigned char);
 void            gpixel       (int, int);
 void            gseg         (int, int, int, int);
 void            grect        (int, int, int, int);

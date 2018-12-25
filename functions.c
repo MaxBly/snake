@@ -7,10 +7,10 @@ void            gbegin       (void) {                                           
 int             ginitWindow  (int x, int y, int w, int h) {                               return CreerFenetre(x, y, w, h);}
 void            gscreen      (int n) {                                                           ChoisirEcran(n);}
 void            gclose       (void) {                                                            FermerGraphique();}
-void            gchoose      (_c c) {                                                            ChoisirCouleurDessin(c);}
-void            gclear       (_c c) {                                                            EffacerEcran(c);}
-_c              gcolor       (char *n) {                                                  return CouleurParNom(n);}
-_c              grgb         (unsigned char r, unsigned char g, unsigned char b) {        return CouleurParComposante(r, g, b);}
+void            gchoose      (col c) {                                                           ChoisirCouleurDessin(c);}
+void            gclear       (col c) {                                                           EffacerEcran(c);}
+col             gcolor       (char *n) {                                                  return CouleurParNom(n);}
+col             grgb         (unsigned char r, unsigned char g, unsigned char b) {        return CouleurParComposante(r, g, b);}
 void            gpixel       (int x, int y) {                                                    DessinerPixel(x, y);}
 void            gseg         (int x, int y, int xx, int yy) {                                    DessinerSegment(x, y, xx, yy);}
 void            grect        (int x, int y, int w, int h) {                                      DessinerRectangle(x, y, w, h);}
