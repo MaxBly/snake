@@ -31,7 +31,7 @@ void ghead(int x, int y, col c) {
 
 Snake* initSnake(int x, int y, int dir_x, int dir_y, col c, int l, int s) {
 
-    Snake* snake = (Snake*) malloc(sizeof(Snake*));
+    Snake* snake = (Snake*) malloc(sizeof(Snake));
     Head* head = (Head*) malloc(sizeof(Head));
     Tail* tail = (Tail*) malloc(sizeof(Tail));
     snake->head = head;
