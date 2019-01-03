@@ -42,98 +42,105 @@ _c wheel(int p) {
     }
 }
 
+/* Snake* initSnake(Snake* snake, int x, int y) {
+    Snake* snake;
+    snake = (Snake*) malloc(sizeof(Snake));
+    
+    
+    return snake;
+}
+ */
+
 
 //ajoute les coordonnées x,y au debut de la liste
-List* pushTop(List* list, int x, int y, _c c) {
-    List* new;
-    new = (List*) malloc(sizeof(List));
-    new->c = c;
+Tail* pushTop(Tail* tail, int x, int y) {
+    Tail* new;
+    new = (Tail*) malloc(sizeof(Tail));
     new->x = x;
     new->y = y;
-    if (list == NULL) {
-        new->prev = list;
+    if (tail == NULL) {
+        new->prev = tail;
         new->next = NULL;
     } else {
-        list->prev = new;
-        new->next = list;
+        tail->prev = new;
+        new->next = tail;
         new->prev = NULL;
     }
     return new;
 }
 
-//ajoute les coordonnées x,y a la fin de la liste
-List* pushBot(List* list, int x, int y, _c c) {
-    List* new;
-    new = (List*) malloc(sizeof(List));
-    new->c = c;
+//ajoute les coordonnées x,y a la fin de la tail
+Tail* pushBot(Tail* tail, int x, int y) {
+    Tail* new;
+    new = (Tail*) malloc(sizeof(Tail));
     new->x = x;
     new->y = y;
 
-    if (list == NULL) {
-        new->next = list;
+    if (tail == NULL) {
+        new->next = tail;
         new->prev = NULL;
         return new;
     } else {
-        List* cur = list;
+        Tail* cur = tail;
         for (; cur->next != NULL; cur = cur->next)
-            ;
+            ; // [NULL|cur]
         new->prev = NULL;
         cur->next = new;
         new->prev = cur;
-        return list;
+        return tail;
     }
 }
+
+
 //supprimer la derniere coordonnée de la liste
-List* popBot(List* list) {
-    if (list == NULL) {
-        return list;
+Tail* popBot(Tail* tail) {
+    if (tail == NULL) {
+        return tail;
     } else {
-        List* cur = list;
+        Tail* cur = tail;
         for (; cur->next != NULL; cur = cur->next)
             ;
         cur->prev->next = NULL;
         free(cur);
-        return list;
+        return tail;
     }
 }
 
-//supprime le p ième bloc de la liste
-List* pop(List* list, int x, int y, _c c, int p) {
+//supprime le p ième bloc de la taile
+Tail* push(Tail* tail, int x, int y, int p) {
 
-    if (p == 0 || list == NULL) return pushTop(list, x, y, c);
+    if (p == 0 || tail == NULL) return pushTop(tail, x, y);
 
-    List* cur = list;
+    Tail* cur = tail;
     int k = 0;
     for(; (cur->next != NULL) && (k<p-1); cur = cur->next) {k++;};
 
-    if(cur->next == NULL) return pushBot(list, x, y, c);
+    if(cur->next == NULL) return pushBot(tail, x, y);
 
-    List* new = (List*) malloc(sizeof(List));
-    List* tmp = cur->next;
-    new->c = c;
+    Tail* new = (Tail*) malloc(sizeof(Tail));
+    Tail* tmp = cur->next;
     new->x = x;
     new->y = y;
     tmp->prev = new;
     new->next = tmp;
     cur->next = new;
     new->prev = cur;
-    return list;
+    return tail;
 
 }
 //affiche le serpent sur la grille
-void disp(List* list) {
-    List* cur = list;
-    #ifdef DEBUG
-        printf("[");
-    #endif DEBUG
+void disp(Tail* tail, _c c) {
+    Tail* cur = tail;
     for (; cur != NULL; cur = cur->next) {
-        ghead(cur->x, cur->y, cur->c);
-        #ifdef DEBUG
-            printf("{x: %d, y: %d}", cur->x, cur->y);
-            if (cur->next!=NULL) printf(", ");
-        #endif DEBUG
+        ghead(cur->x, cur->y, c);
     }
-    #ifdef DEBUG
-        printf("]\n");
-    #endif DEBUG
+}
+
+void display(Tail* tail) {
+    char format [3];
+    Tail* cur = tail;
+    for (int f = 0; cur != NULL; cur = cur->next, f++) {
+        //sprintf(format, "%d", cur->d);
+        gwrite(f*20, HEIGHT-20, format, 2);
+    }
 }
