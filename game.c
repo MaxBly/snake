@@ -53,94 +53,144 @@ _c wheel(int p) {
 
 
 //ajoute les coordonnées x,y au debut de la liste
-Tail* pushTop(Tail* tail, int x, int y) {
-    Tail* new;
-    new = (Tail*) malloc(sizeof(Tail));
+List* pushTop(List* list, int x, int y, _c c) {
+    List* new;
+    new = (List*) malloc(sizeof(List));
+    new->c = c;
     new->x = x;
     new->y = y;
-    if (tail == NULL) {
-        new->prev = tail;
+    if (list == NULL) {
+        new->prev = list;
         new->next = NULL;
     } else {
-        tail->prev = new;
-        new->next = tail;
+        list->prev = new;
+        new->next = list;
         new->prev = NULL;
     }
     return new;
 }
 
 //ajoute les coordonnées x,y a la fin de la tail
-Tail* pushBot(Tail* tail, int x, int y) {
-    Tail* new;
-    new = (Tail*) malloc(sizeof(Tail));
+List* pushBot(List* list, int x, int y, _c c) {
+    List* new;
+    new = (List*) malloc(sizeof(List));
+    new->c = c;
     new->x = x;
     new->y = y;
 
-    if (tail == NULL) {
-        new->next = tail;
+    if (list == NULL) {
+        new->next = list;
         new->prev = NULL;
         return new;
     } else {
-        Tail* cur = tail;
+        List* cur = list;
         for (; cur->next != NULL; cur = cur->next)
-            ; // [NULL|cur]
+            ;
         new->prev = NULL;
         cur->next = new;
         new->prev = cur;
-        return tail;
+        return list;
     }
 }
 
 
 //supprimer la derniere coordonnée de la liste
-Tail* popBot(Tail* tail) {
-    if (tail == NULL) {
-        return tail;
+List* popBot(List* list) {
+    if (list == NULL) {
+        return list;
     } else {
-        Tail* cur = tail;
+        List* cur = list;
         for (; cur->next != NULL; cur = cur->next)
             ;
         cur->prev->next = NULL;
         free(cur);
-        return tail;
+        return list;
     }
 }
 
+List* pop (List* list, int x, int y, int *done) {
+    List* cur = list;
+    if (list == NULL) {
+        *done = 0;
+        return NULL;
+    } else if (list->next == NULL && list->prev == NULL) {
+        if (list->x == x && list->y == y) {
+            *done = 1;
+            return NULL;
+        } else {
+            *done = 0;
+            return list;
+        }
+    }
+    for (; (cur->x == x && cur->y == y) || (cur->next == NULL); cur = cur->next) {
+        if (cur->x == x && cur->y == y) {
+            if (cur->next == NULL) {cur->prev->next = NULL;} else {cur->prev->next = cur->next;}
+            if (cur->prev == NULL) {
+                cur->next->prev = NULL;
+                List* new = cur->next;
+                free(cur);
+                *done = 1;
+                return new;
+            } else {
+                cur->next->prev = cur->prev;
+                free(cur);
+                *done = 1;
+                return list;
+            }
+                
+        }
+    }
+
+    *done = 0;
+    return list;
+}
+
+
+
+
 //supprime le p ième bloc de la taile
-Tail* push(Tail* tail, int x, int y, int p) {
+List* push(List* list, int x, int y, int p, _c c) {
 
-    if (p == 0 || tail == NULL) return pushTop(tail, x, y);
+    if (p == 0 || list == NULL) return pushTop(list, x, y, c);
 
-    Tail* cur = tail;
+    List* cur = list;
     int k = 0;
     for(; (cur->next != NULL) && (k<p-1); cur = cur->next) {k++;};
 
-    if(cur->next == NULL) return pushBot(tail, x, y);
+    if(cur->next == NULL) return pushBot(list, x, y, c);
 
-    Tail* new = (Tail*) malloc(sizeof(Tail));
-    Tail* tmp = cur->next;
+    List* new = (List*) malloc(sizeof(List));
+    List* tmp = cur->next;
+    new->c = c;
     new->x = x;
     new->y = y;
     tmp->prev = new;
     new->next = tmp;
     cur->next = new;
     new->prev = cur;
-    return tail;
+    return list;
 
 }
 //affiche le serpent sur la grille
-void disp(Tail* tail, _c c) {
-    Tail* cur = tail;
+void disp(List* list, _c c) {
+    List* cur = list;
     for (; cur != NULL; cur = cur->next) {
-        ghead(cur->x, cur->y, c);
+        ghead(cur->x, cur->y, cur->c);
     }
 }
 
-void display(Tail* tail) {
-    char format [3];
-    Tail* cur = tail;
+void display(List* list, int k) {
+    char format [30];
+    List* cur = list;
     for (int f = 0; cur != NULL; cur = cur->next, f++) {
-        //sprintf(format, "%d", cur->d);
-        gwrite(f*20, HEIGHT-20, format, 2);
+        sprintf(format, "%d;%d", cur->x, cur->y);
+        gwrite(f*40, HEIGHT-k, format, 2);
     }
+}
+
+
+void dispgar(Garden* garden) {
+    char format[30];
+    sprintf(format, "level=%d; n=%d; r=%d;", garden->level, garden->n, garden->r);
+    gwrite(0, HEIGHT, format, 2);
 }
