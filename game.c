@@ -42,14 +42,37 @@ _c wheel(int p) {
     }
 }
 
-/* Snake* initSnake(Snake* snake, int x, int y) {
-    Snake* snake;
+Snake* initSnake(Snake* snake, int x, int y, int dir_x, int dir_y, int length, int speed) {
     snake = (Snake*) malloc(sizeof(Snake));
-    
-    
+    snake->x = x;
+    snake->y = y; 
+    snake->dir_x = dir_x;
+    snake->dir_y = dir_y;
+    snake->length = length;
+    snake->speed = speed;
+    snake->tail = NULL;
+    for (int i = 0; i < snake->length; i++) {
+        snake->tail = pushTop(snake->tail, snake->x, snake->y  + snake->length-i-1, wheel(5*snake->length));
+    }
     return snake;
+} 
+
+
+Garden* initGarden(Garden* garden, int level, int eaten) {
+    garden = (Garden*) malloc(sizeof(Garden));
+    garden->level = level;
+    garden->eaten = eaten; 
+    garden->apples = NULL;
+    garden->obs = NULL;
+    for (int i = 0; i < garden->level+5; i++) {
+        garden->apples = pushTop(garden->apples, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), wheel(5*garden->level));
+    }
+    for (int i = 0; i < garden->level; i++) {
+        garden->obs = pushTop(garden->obs, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), grgb(255,255,255));
+    }
+    return garden;
 }
- */
+
 
 
 //ajoute les coordonnées x,y au debut de la liste
@@ -108,46 +131,6 @@ List* popBot(List* list) {
     }
 }
 
-List* pop (List* list, int x, int y, int *done) {
-    List* cur = list;
-    if (list == NULL) {
-        *done = 0;
-        return NULL;
-    } else if (list->next == NULL && list->prev == NULL) {
-        if (list->x == x && list->y == y) {
-            *done = 1;
-            return NULL;
-        } else {
-            *done = 0;
-            return list;
-        }
-    }
-    for (; (cur->x == x && cur->y == y) || (cur->next == NULL); cur = cur->next) {
-        if (cur->x == x && cur->y == y) {
-            if (cur->next == NULL) {cur->prev->next = NULL;} else {cur->prev->next = cur->next;}
-            if (cur->prev == NULL) {
-                cur->next->prev = NULL;
-                List* new = cur->next;
-                free(cur);
-                *done = 1;
-                return new;
-            } else {
-                cur->next->prev = cur->prev;
-                free(cur);
-                *done = 1;
-                return list;
-            }
-                
-        }
-    }
-
-    *done = 0;
-    return list;
-}
-
-
-
-
 //supprime le p ième bloc de la taile
 List* push(List* list, int x, int y, int p, _c c) {
 
@@ -178,19 +161,25 @@ void disp(List* list, _c c) {
         ghead(cur->x, cur->y, cur->c);
     }
 }
-
+/* 
 void display(List* list, int k) {
-    char format [30];
+    char format [50];
     List* cur = list;
     for (int f = 0; cur != NULL; cur = cur->next, f++) {
-        sprintf(format, "%d;%d", cur->x, cur->y);
-        gwrite(f*40, HEIGHT-k, format, 2);
+        sprintf(format, "%d;%d[%p|%p|%p]", cur->x, cur->y, cur, cur->prev, cur->next);
+        gwrite(0, HEIGHT-(f*20), format, 2);
     }
-}
+} */
 
 
 void dispgar(Garden* garden) {
     char format[30];
-    sprintf(format, "level=%d; n=%d; r=%d;", garden->level, garden->n, garden->r);
-    gwrite(0, HEIGHT, format, 2);
+    sprintf(format, "l=%d; e=%d", garden->level, garden->eaten);
+    gwrite(0, HEIGHT-40, format, 2);
+}
+
+void dispsnk(Snake* snake) {
+    char format[30];
+    sprintf(format, "l=%d; s=%d", snake->length, snake->speed);
+    gwrite(0, HEIGHT-20, format, 2);
 }
