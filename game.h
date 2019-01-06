@@ -20,6 +20,7 @@ struct Snake {
     int dir_x;
     int dir_y;
     int wheel;
+    int go_on;
     List* tail;
 };
 
@@ -33,19 +34,18 @@ struct Garden {
 
 void    ggrid       (int, int, int, int, _c);
 int     ggetCoords  (int, int, int);
-double  ggetDist    (int, int, int, int);
 void    ghead       (int, int, _c);
 _c      wheel       (int);
 
 Snake*  initSnake   (Snake*, int, int, int, int, int , int);
 Garden* initGarden  (Garden*, int, int);
+Snake*  pause       (Snake*);
 
 List*   pushTop (List*, int, int, _c);
 List*   pushBot (List*, int, int, _c);
 List*   popBot  (List*);
 List*   push    (List*, int, int, int, _c);
 void    disp    (List*, _c);
-void    display (List*, int);
 void    dispgar (Garden*);
 void    dispsnk (Snake*);
 

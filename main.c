@@ -10,43 +10,34 @@ int main(void) {
     gbegin();
     ginitWindow(100,2100,WIDTH,HEIGHT);
     gclear(grgb(45,45,45));
-    int running = 1;                // tant que running est a 1 le programme continue
-    int go_on = 0;
-    int another = 0;
+    int running = 1;
     int center_x = WIDTH/GRID/2;
     int center_y = HEIGHT/GRID/2;
 
     Snake* snake = NULL;
     snake = initSnake(snake, center_x, center_y, 0, 0, 10, 1);
     _c c = wheel(snake->wheel);
-    
+
     Garden* garden = NULL;
     garden = initGarden(garden, 0, 0);
-    
+
     unsigned long next = gms() + CYCLE;
 
     while (running) {
-        gscreen(1);             //basculage sur l'ecran fictif
-        gclear(grgb(0,0,0));    //clear l'ecran
-        ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(60,60,60)); // afficher la grille
+        gscreen(1);
+        gclear(grgb(0,0,0));
+        ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(60,60,60));
 
-        if (another) { 
-            snake->tail = pushTop(snake->tail, snake->x, snake->y, c); 
-            another = 0;
-            snake->length++;
-        }
-        if ((gms() > next) && go_on) { // a chaque cycle de temps, définit par la constante CYCLE (dans main.h)
-            next = gms() + (CYCLE/snake->speed/0.50);
-            // on bouge le curseur seulement si on a la garanti qu'il ne sort pas du cadre
+        if ((gms() > next) && snake->go_on) {
+            next = gms() + (CYCLE/snake->speed/0.5);
             if ((snake->x + snake->dir_x < WIDTH /GRID) && (snake->x + snake->dir_x >= 0)) snake->x = snake->x + snake->dir_x;
             if ((snake->y + snake->dir_y < HEIGHT/GRID) && (snake->y + snake->dir_y >= 0)) snake->y = snake->y + snake->dir_y;
-            c = wheel(5*snake->length);
-            snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel)); // on ralonge le serpent
+            c = wheel(snake->wheel);
+            snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
             snake->tail = popBot (snake->tail);
-            
             snake->wheel += 10;
-            if (snake->wheel>255) snake->wheel = 0;                        //supprimer la queue du serpent
-            
+            if (snake->wheel > 255) snake->wheel = 0;
+
             if (garden->apples == NULL) {
                 garden = initGarden(garden, garden->level + 1, garden->eaten);
                 snake->speed++;
@@ -56,13 +47,11 @@ int main(void) {
             ||  (snake->tail->next->y + snake->dir_y >= HEIGHT/GRID) || (snake->tail->next->y + snake->dir_y == -1)) {
                 snake = initSnake(snake, center_x, center_y, 0, 0, 10, 1);
                 garden = initGarden(garden, 0, 0);
-                go_on = 0;
             }
             for (List* cur = garden->obs; cur != NULL; cur = cur->next) {
                 if (cur->x == snake->x && cur->y == snake->y) {
                     snake = initSnake(snake, center_x, center_y, 0, 0, 10, 1);
                     garden = initGarden(garden, 0, 0);
-                    go_on = 0;
                 }
             }
             for (List* cur = garden->apples; cur != NULL; cur = cur->next) {
@@ -82,18 +71,17 @@ int main(void) {
                     }
                     garden->eaten++;
                     snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
-                    another = 1;
-                    snake->length++;
+                    snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
+                    snake->length+=2;
                 }
             }
 
-            if (snake->tail != NULL) { // on ne prend pas en compte la tete du serpent
+            if (snake->tail != NULL) {
                 List* cur = snake->tail->next;
-                for(; cur->next != NULL; cur = cur->next) { // on parcours tout le serpent sauf la tete
+                for(; cur->next != NULL; cur = cur->next) {
                     if ((cur->x == snake->x + snake->dir_x) && (cur->y == snake->y + snake->dir_y)) {
                         snake = initSnake(snake, center_x, center_y, 0, 0, 10, 1);
                         garden = initGarden(garden, 0, 0);
-                        go_on = 0;
                     }
                 }
             }
@@ -101,21 +89,21 @@ int main(void) {
         disp(snake->tail, wheel(snake->wheel));
         if (garden->apples) disp(garden->apples, wheel(snake->wheel));
         if (garden->obs) disp(garden->obs, wheel(snake->wheel));
-        dispsnk(snake);
-        dispgar(garden);
-
-        if (gdoKey()) { // si une touche est dispo
-            switch(ggetKey()) { // on teste la touche dispo, les variable XK_... sont definit dans < graph.h>
-                case XK_Escape: running = 0;                                break; // running passe a 0 donc on quitte le jeu
-                case XK_space:  go_on = !go_on; if (!snake->dir_x && !snake->dir_y) snake->dir_y = -1;   break; //pause
-                case XK_Return: snake->dir_x = 0; snake->dir_y = 0;                              break; //'temporaire' ajoute juste un bloc au serpent pour le ralonger pour les tests
-                case XK_Left:   if (snake->dir_x !=  1) snake->dir_x = -1, snake->dir_y = 0;     break; //on change la diréction seulement si ce n'est pas la direction opposé
-                case XK_Right:  if (snake->dir_x != -1) snake->dir_x =  1, snake->dir_y = 0;     break;
-                case XK_Down:   if (snake->dir_y != -1) snake->dir_y =  1, snake->dir_x = 0;     break;
-                case XK_Up:     if (snake->dir_y !=  1) snake->dir_y = -1, snake->dir_x = 0;     break;
+        #ifdef DEBUG
+            dispsnk(snake);
+            dispgar(garden);
+        #endif /* DEBUG */
+        if (gdoKey()) {
+            switch(ggetKey()) {
+                case XK_Escape: running = 0;                                                    break;
+                case XK_space:  snake = pause(snake);                                           break;
+                case XK_Left:   if (snake->dir_x !=  1) snake->dir_x = -1, snake->dir_y = 0;    break;
+                case XK_Right:  if (snake->dir_x != -1) snake->dir_x =  1, snake->dir_y = 0;    break;
+                case XK_Down:   if (snake->dir_y != -1) snake->dir_y =  1, snake->dir_x = 0;    break;
+                case XK_Up:     if (snake->dir_y !=  1) snake->dir_y = -1, snake->dir_x = 0;    break;
             }
         }
-        gcopy(1, 0, 0, 0, WIDTH, HEIGHT, 0, 0); // bascule l'ecran fictif sur l'ecran affiché
+        gcopy(1, 0, 0, 0, WIDTH, HEIGHT, 0, 0);
     }
 
     return 0;

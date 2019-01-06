@@ -20,9 +20,6 @@ void ggrid(int w, int h, int c, int r, _c color) {
 // permet de recuperer les coodronné graphique a partir de la HEIGT/WIDTH, du coef GRID et de la case k
 int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; }
 
-//retourne la distance entre de points (permet de caclculer si on est sur une pomme ou pas, ou si on se mange soit meme)
-double ggetDist(int x, int y, int xx, int yy) { return sqrt(pow(xx - x, 2) + pow(yy - y, 2)); } // formule de la distance entre deux points du plan
-
 void ghead(int x, int y, _c c) {
     int xx = ggetCoords(WIDTH, GRID, x);
     int yy = ggetCoords(HEIGHT, GRID, y);
@@ -44,8 +41,9 @@ _c wheel(int p) {
 
 Snake* initSnake(Snake* snake, int x, int y, int dir_x, int dir_y, int length, int speed) {
     snake = (Snake*) malloc(sizeof(Snake));
+    snake->go_on = 0;
     snake->x = x;
-    snake->y = y; 
+    snake->y = y;
     snake->dir_x = dir_x;
     snake->dir_y = dir_y;
     snake->length = length;
@@ -56,13 +54,13 @@ Snake* initSnake(Snake* snake, int x, int y, int dir_x, int dir_y, int length, i
         snake->tail = pushTop(snake->tail, snake->x, snake->y  + snake->length-i-1, wheel(snake->wheel));
     }
     return snake;
-} 
+}
 
 
 Garden* initGarden(Garden* garden, int level, int eaten) {
     garden = (Garden*) malloc(sizeof(Garden));
     garden->level = level;
-    garden->eaten = eaten; 
+    garden->eaten = eaten;
     garden->apples = NULL;
     garden->obs = NULL;
     for (int i = 0; i < garden->level+5; i++) {
@@ -74,7 +72,11 @@ Garden* initGarden(Garden* garden, int level, int eaten) {
     return garden;
 }
 
-
+Snake* pause(Snake* snake) {
+    snake->go_on = !(snake->go_on);
+    if (!(snake->dir_x) && !(snake->dir_y)) snake->dir_y = -1;
+    return snake;
+}
 
 //ajoute les coordonnées x,y au debut de la liste
 List* pushTop(List* list, int x, int y, _c c) {
@@ -162,15 +164,6 @@ void disp(List* list, _c c) {
         ghead(cur->x, cur->y, cur->c);
     }
 }
-/* 
-void display(List* list, int k) {
-    char format [50];
-    List* cur = list;
-    for (int f = 0; cur != NULL; cur = cur->next, f++) {
-        sprintf(format, "%d;%d[%p|%p|%p]", cur->x, cur->y, cur, cur->prev, cur->next);
-        gwrite(0, HEIGHT-(f*20), format, 2);
-    }
-} */
 
 
 void dispgar(Garden* garden) {
@@ -181,6 +174,6 @@ void dispgar(Garden* garden) {
 
 void dispsnk(Snake* snake) {
     char format[30];
-    sprintf(format, "l=%d; s=%d", snake->length, snake->speed);
+    sprintf(format, "l=%d; s=%d; w=%d", snake->length, snake->speed, snake->wheel);
     gwrite(0, HEIGHT-20, format, 2);
 }
