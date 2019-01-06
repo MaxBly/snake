@@ -52,7 +52,8 @@ Snake* initSnake(Snake* snake, int x, int y, int dir_x, int dir_y, int length, i
     snake->speed = speed;
     snake->tail = NULL;
     for (int i = 0; i < snake->length; i++) {
-        snake->tail = pushTop(snake->tail, snake->x, snake->y  + snake->length-i-1, wheel(5*snake->length));
+        snake->wheel = 10*(i+1);
+        snake->tail = pushTop(snake->tail, snake->x, snake->y  + snake->length-i-1, wheel(snake->wheel));
     }
     return snake;
 } 

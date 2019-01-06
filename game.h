@@ -19,6 +19,7 @@ struct Snake {
     int y;
     int dir_x;
     int dir_y;
+    int wheel;
     List* tail;
 };
 
