@@ -1,3 +1,7 @@
+
+#ifndef MAIN_H
+#define MAIN_H
+
 #include "game.h"
 
 #ifndef     HEIGHT
@@ -17,4 +21,5 @@
 #endif   /* CYCLE */
 
 
-//#define     DEBUG
+#define     DEBUG
+#endif      /* MAIN_H */
