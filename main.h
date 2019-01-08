@@ -36,6 +36,10 @@
 #define     CYCLE   100000L // vitesse de recharge du snake
 #endif   /* CYCLE */
 
+#ifndef     FRAMERATE
+#define     FRAMERATE   60/24 // vitesse de recharge du snake
+#endif   /* FRAMERATE */
+
 
 #define     DEBUG
 #endif      /* MAIN_H */

@@ -23,7 +23,8 @@ int main(void) {
 
     Garden* garden = initGarden(garden, 0, 0);
 
-    unsigned long next = gms() + CYCLE;
+    unsigned long next = gms() + ops->cycle;
+    //unsigned long nextframe = gms() + ops->framerate;
 
     while (ops->running) {
         gscreen(1);
@@ -106,13 +107,18 @@ int main(void) {
                     case XK_Up:     if (snake->dir_y !=  1) snake->dir_y = -1, snake->dir_x = 0;    break;
                 }
             }
+        gcopy(1, 0, 0, 0, ops->width, ops->height, (WINDOW_WIDTH - ops->width)/2, (WINDOW_HEIGHT - ops->height)/2);
 
-            gcopy(1, 0, 0, 0, ops->width, ops->height, (WINDOW_WIDTH - ops->width)/2, (WINDOW_HEIGHT - ops->height)/2);
         }
 
         if (ops->in_menu) {
+            //if (gms() > nextframe)  nextframe = gms() + nextframe;
 
 
+
+            btnPlay(grgb(0, 0, 0), grgb(255, 255, 255));
+            btnOpts(grgb(0, 0, 0), grgb(255, 255, 255));
+            btnQuit(grgb(0, 0, 0), grgb(255, 255, 255));
 
 
             if(gdoKey()) {
@@ -122,6 +128,7 @@ int main(void) {
                     case XK_Down:                           break;
                 }
             }
+        gcopy(1, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
         }
 
     }

@@ -19,6 +19,8 @@ struct Options {
 
 
 Options* initOptions(Options*, int, int, int, int, int, int);
-int menu();
+void btnPlay(_c, _c);
+void btnOpts(_c, _c);
+void btnQuit(_c, _c);
 
 #endif /* MENU_H */
