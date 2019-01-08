@@ -28,6 +28,7 @@ void ghead(int x, int y, _c c) {
 }
 
 _c wheel(int p) {
+    while (p > 255) { p -= 255; }
     if(p < 85) {
         return grgb(p*3, 255-p*3, 0);
     } else if(p < 170) {
@@ -64,7 +65,7 @@ Garden* initGarden(Garden* garden, int level, int eaten) {
     garden->apples = NULL;
     garden->obs = NULL;
     for (int i = 0; i < garden->level+5; i++) {
-        garden->apples = pushTop(garden->apples, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), wheel(5*garden->level));
+        garden->apples = pushTop(garden->apples, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), wheel(5*(garden->eaten)));
     }
     for (int i = 0; i < garden->level; i++) {
         garden->obs = pushTop(garden->obs, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), grgb(255,255,255));
