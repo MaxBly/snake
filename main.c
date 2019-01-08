@@ -48,7 +48,6 @@ int main(void) {
                         garden = initGarden(garden, ops, garden->level + 1, garden->eaten);
                         snake->speed++;
                     }
-
                     if ((snake->tail->next->x + snake->dir_x >= ops->width /ops->grid) || (snake->tail->next->x + snake->dir_x == -1)
                     ||  (snake->tail->next->y + snake->dir_y >= ops->height/ops->grid) || (snake->tail->next->y + snake->dir_y == -1)) {
                         snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
