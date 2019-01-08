@@ -28,7 +28,7 @@ Options* initOptions(Options* ops, int width, int height, int grid, int cycle, i
 }
 
 
-void btn (int p, char* text, _c c, _c c2, int sel) {
+void btn (int p, char* text, _c c, _c c2, int sel, int f) {
     int ww = WINDOW_WIDTH;
     int wh = WINDOW_HEIGHT;
     int w = ww/4;
@@ -42,6 +42,10 @@ void btn (int p, char* text, _c c, _c c2, int sel) {
     if (sel) {
         gchoose(grgb(255, 255, 255));
         grect(x, y, w, h);
+    }
+    if (f) {
+        char text2[30] = "PRESS SPACE TO RESUME/PAUSE";
+        gwrite(2 * w - gstrSize(text2, s)/2, (p + 1) * h - (gtopFontSize(s) + gbotFontSize(s)) / 2, text2, s);
     }
     gwrite(2 * w - gstrSize(text, s)/2, (p + 0.5) * h - (gtopFontSize(s) + gbotFontSize(s)) / 2, text, s);
 }

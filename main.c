@@ -15,7 +15,8 @@ int main(void) {
     ops->center_x = ops->width/ops->grid/2;
     ops->center_y = ops->height/ops->grid/2;
     ops->in_menu = 1;
-
+    ops->lastlvl = 0;
+    ops->lastscr = 0;
     ginitWindow(100,1000,WINDOW_WIDTH,WINDOW_HEIGHT);
     gclear(grgb(45,45,45));
     Snake* snake = NULL;
@@ -29,12 +30,10 @@ int main(void) {
             nextframe = gms() + (60/ops->fps)*1000;
             gscreen(1);
             gclear(grgb(45,45,45));
-
             if (ops->in_game) {
                 ggrid(ops->width, ops->height, ops->width/ops->grid, ops->height/ops->grid, grgb(60,60,60));
 
                 if ((gms() > next) && snake->go_on) {
-                    //next = gms() + (ops->cycle/ops->speed/ops->cycle/snake->speed*0.1);
                     next = gms() + (ops->cycle - (snake->speed*ops->cycle/20)*ops->speed/5);
 
                     if ((snake->x + snake->dir_x < ops->width /ops->grid) && (snake->x + snake->dir_x >= 0)) snake->x = snake->x + snake->dir_x;
@@ -43,9 +42,14 @@ int main(void) {
                     snake->tail = popBot (snake->tail);
                     snake->wheel += 10;
                     if (snake->wheel > 255) snake->wheel = 0;
+                    ops->lastscr = garden->eaten*5;
+                    ops->lastlvl = garden->level;
 
                     if (garden->apples == NULL) {
                         garden = initGarden(garden, ops, garden->level + 1, garden->eaten);
+                        ops->lastscr = garden->eaten*5;
+                        ops->lastlvl = garden->level;
+                        snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake + garden->level, 1);
                         snake->speed++;
                     }
                     if ((snake->tail->next->x + snake->dir_x >= ops->width /ops->grid) || (snake->tail->next->x + snake->dir_x == -1)
@@ -57,6 +61,15 @@ int main(void) {
                         if (cur->x == snake->x && cur->y == snake->y) {
                             snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
                             garden = initGarden(garden, ops, 0, 0);
+                        }
+                    }
+                    if (snake->tail != NULL) {
+                        List* cur = snake->tail->next;
+                        for(; cur->next != NULL; cur = cur->next) {
+                            if ((cur->x == snake->tail->x) && (cur->y == snake->tail->y)) {
+                                snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
+                                garden = initGarden(garden, ops, 0, 0);
+                            }
                         }
                     }
                     for (List* cur = garden->apples; cur != NULL; cur = cur->next) {
@@ -78,16 +91,7 @@ int main(void) {
                             snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
                             snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
                             snake->length+=2;
-                        }
-                    }
-
-                    if (snake->tail != NULL) {
-                        List* cur = snake->tail->next;
-                        for(; cur->next != NULL; cur = cur->next) {
-                            if ((cur->x == snake->x + snake->dir_x) && (cur->y == snake->y + snake->dir_y)) {
-                                snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
-                                garden = initGarden(garden, ops, 0, 0);
-                            }
+                            break;
                         }
                     }
                 }
@@ -113,13 +117,18 @@ int main(void) {
             gscreen(0);
             score(ops, garden);
             level(ops, garden);
+            if (!snake->go_on) {
+                char text[30];
+                sprintf(text, "Score: %d    Level: %d", ops->lastscr, ops->lastlvl);
+                btn(4, text, grgb(45, 45, 45), grgb(255, 255, 255), 1, 1);
+            }
             gscreen(1);
             } else if (ops->in_menu) {
 
 
-                btn(2, "PLAY",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0));
-                btn(4, "OPTIONS",   grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1));
-                btn(6, "QUIT",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2));
+                btn(2, "PLAY",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0), 0);
+                btn(4, "OPTIONS",   grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1), 0);
+                btn(6, "QUIT",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2), 0);
                 if(gdoKey()) {
                     switch(ggetKey()) {
                         case XK_Escape: ops->running = 0;   break;

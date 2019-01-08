@@ -183,7 +183,7 @@ void score(Options* ops, Garden* garden) {
     int x = ww - wc - w;
     int y = wh - hc;
     gchoose(grgb(45, 45, 45));
-    gfillRect(x, y, w, h);
+    gfillRect(x - 10, y, w + 20, h);
     gchoose(grgb(255, 255, 255));
     gwrite(x + 5, y + h/2, text, s);
 }

@@ -18,12 +18,14 @@ struct Options {
     int fps;
     int apples;
     int snake;
+    int lastscr;
+    int lastlvl;
     int center_x;
     int center_y;
 };
 
 Options* initOptions(Options*, int, int, int, int, int, int);
-void btn(int, char*, _c, _c, int);
+void btn(int, char*, _c, _c, int, int);
 void btnScroll(int, char*, int, _c, _c, int);
 
 #endif /* MENU_H */
