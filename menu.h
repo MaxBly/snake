@@ -14,6 +14,7 @@ struct Options {
     int grid;
     int running;
     int cycle;
+    int speed;
     int fps;
     int apples;
     int snake;

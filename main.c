@@ -16,7 +16,7 @@ int main(void) {
     ops->center_y = ops->height/ops->grid/2;
     ops->in_menu = 1;
 
-    ginitWindow(100,100,WINDOW_WIDTH,WINDOW_HEIGHT);
+    ginitWindow(100,1000,WINDOW_WIDTH,WINDOW_HEIGHT);
     gclear(grgb(45,45,45));
     Snake* snake = NULL;
     Garden* garden = NULL;
@@ -34,7 +34,9 @@ int main(void) {
                 ggrid(ops->width, ops->height, ops->width/ops->grid, ops->height/ops->grid, grgb(60,60,60));
 
                 if ((gms() > next) && snake->go_on) {
-                    next = gms() + (ops->cycle/snake->speed/0.5);
+                    //next = gms() + (ops->cycle/ops->speed/ops->cycle/snake->speed*0.1);
+                    next = gms() + (ops->cycle - (snake->speed*ops->cycle/20)*ops->speed/5);
+
                     if ((snake->x + snake->dir_x < ops->width /ops->grid) && (snake->x + snake->dir_x >= 0)) snake->x = snake->x + snake->dir_x;
                     if ((snake->y + snake->dir_y < ops->height/ops->grid) && (snake->y + snake->dir_y >= 0)) snake->y = snake->y + snake->dir_y;
                     snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
@@ -116,9 +118,9 @@ int main(void) {
             } else if (ops->in_menu) {
 
 
-                btn(2, "PLAY",  grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0));
-                btn(4, "OPTIONS",  grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1));
-                btn(6, "QUIT",  grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2));
+                btn(2, "PLAY",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0));
+                btn(4, "OPTIONS",   grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1));
+                btn(6, "QUIT",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2));
                 if(gdoKey()) {
                     switch(ggetKey()) {
                         case XK_Escape: ops->running = 0;   break;
@@ -151,13 +153,14 @@ int main(void) {
                 btnScroll(5,  "APPLES", ops->apples, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1));
                 btnScroll(7,  "GRID"  , ops->grid  , grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2));
                 btnScroll(9,  "WIDTH" , ops->width /ops->grid, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 3));
-                btnScroll(11,  "HEIGHT", ops->height/ops->grid, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 4));
-                btnScroll(13,  "FPS", ops->fps, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 5));
+                btnScroll(11, "HEIGHT", ops->height/ops->grid, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 4));
+                btnScroll(13, "FPS"   , ops->fps,    grgb(0, 0, 0), grgb(255, 255, 255), (menu == 5));
+                btnScroll(15, "SPEED" , ops->speed,  grgb(0, 0, 0), grgb(255, 255, 255), (menu == 6));
                 if(gdoKey()) {
                     switch(ggetKey()) {
-                        case XK_Escape: ops->in_opts = 0; ops->in_menu = 1;  break;
+                        case XK_Escape: ops->in_opts = 0; ops->in_menu = 1; menu = 0; break;
                         case XK_Up:     if(menu > 0) menu--; break;
-                        case XK_Down:   if(menu < 5) menu++; break;
+                        case XK_Down:   if(menu < 6) menu++; break;
                         case XK_Right:
                             switch(menu) {
                                 case 0: ops->snake++ ; break;
@@ -166,6 +169,7 @@ int main(void) {
                                 case 3: ops->width  += ops->grid; break;
                                 case 4: ops->height += ops->grid; break;
                                 case 5: ops->fps++; break;
+                                case 6: ops->speed++; break;
                             }
                         break;
                         case XK_Left:
@@ -176,6 +180,7 @@ int main(void) {
                                 case 3: ops->width  -= ops->grid; break;
                                 case 4: ops->height -= ops->grid; break;
                                 case 5: ops->fps--; break;
+                                case 6: ops->speed--; break;
                             }
                         break;
                         case XK_Return:

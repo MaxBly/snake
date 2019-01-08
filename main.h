@@ -31,8 +31,12 @@
 #endif   /* APPLES */
 
 #ifndef     CYCLE
-#define     CYCLE   100000L // vitesse de recharge du snake
+#define     CYCLE   100000 // vitesse de recharge du snake
 #endif   /* CYCLE */
+
+#ifndef     SPEED
+#define     SPEED   10 // vitesse de recharge du snake
+#endif   /* SPEED */
 
 #ifndef     FPS
 #define     FPS   24 // vitesse de recharge du snake

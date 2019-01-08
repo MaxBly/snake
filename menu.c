@@ -15,6 +15,7 @@ Options* initOptions(Options* ops, int width, int height, int grid, int cycle, i
     ops->grid = grid;
     ops->cycle = cycle;
     ops->fps = FPS;
+    ops->speed = SPEED;
     ops->in_game = 0;
     ops->in_menu = 1;
     ops->in_opts = 0;
