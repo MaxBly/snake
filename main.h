@@ -2,14 +2,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "game.h"
-
 #ifndef     WIDTH
-#define     WIDTH   900 // largeur de la fenetre
+#define     WIDTH   1200 // largeur de la fenetre
 #endif   /* WIDTH */
 
 #ifndef     HEIGHT
-#define     HEIGHT  600 // hauteur
+#define     HEIGHT  800 // hauteur
 #endif   /* HEIGHT */
 
 #ifndef     WINDOW_WIDTH
@@ -36,10 +34,10 @@
 #define     CYCLE   100000L // vitesse de recharge du snake
 #endif   /* CYCLE */
 
-#ifndef     FRAMERATE
-#define     FRAMERATE   60/24 // vitesse de recharge du snake
-#endif   /* FRAMERATE */
+#ifndef     FPS
+#define     FPS   24 // vitesse de recharge du snake
+#endif   /* FPS */
 
 
-#define     DEBUG
+//#define     DEBUG
 #endif      /* MAIN_H */

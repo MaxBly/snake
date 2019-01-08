@@ -4,6 +4,7 @@
 #include <math.h>
 #include "functions.h"
 #include "main.h"
+#include "menu.h"
 #include "game.h"
 
 void ggrid(int w, int h, int c, int r, _c color) {
@@ -20,11 +21,11 @@ void ggrid(int w, int h, int c, int r, _c color) {
 // permet de recuperer les coodronné graphique a partir de la HEIGT/WIDTH, du coef GRID et de la case k
 int ggetCoords(int wh, int grid, int k) { return wh/(wh/grid)*k; }
 
-void ghead(int x, int y, _c c) {
-    int xx = ggetCoords(WIDTH, GRID, x);
-    int yy = ggetCoords(HEIGHT, GRID, y);
+void ghead(Options* ops, int x, int y, _c c) {
+    int xx = ggetCoords(ops->width,  ops->grid, x);
+    int yy = ggetCoords(ops->height, ops->grid, y);
     gchoose(c);
-    gfillRect(xx, yy, GRID, GRID);
+    gfillRect(xx, yy, ops->grid, ops->grid);
 }
 
 _c wheel(int p) {
@@ -58,17 +59,17 @@ Snake* initSnake(Snake* snake, int x, int y, int dir_x, int dir_y, int length, i
 }
 
 
-Garden* initGarden(Garden* garden, int level, int eaten) {
+Garden* initGarden(Garden* garden, Options* ops, int level, int eaten) {
     garden = (Garden*) malloc(sizeof(Garden));
     garden->level = level;
     garden->eaten = eaten;
     garden->apples = NULL;
     garden->obs = NULL;
-    for (int i = 0; i < garden->level+5; i++) {
-        garden->apples = pushTop(garden->apples, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), wheel(5*(garden->eaten)));
+    for (int i = 0; i < garden->level + ops->apples; i++) {
+        garden->apples = pushTop(garden->apples, (rand() % ops->width/ops->grid), (rand() % ops->height/ops->grid), wheel(5*(garden->eaten)));
     }
     for (int i = 0; i < garden->level; i++) {
-        garden->obs = pushTop(garden->obs, (rand() % WIDTH/GRID), (rand() % HEIGHT/GRID), grgb(255,255,255));
+        garden->obs = pushTop(garden->obs, (rand() % ops->width/ops->grid), (rand() % ops->height/ops->grid), grgb(255,255,255));
     }
     return garden;
 }
@@ -159,22 +160,61 @@ List* push(List* list, int x, int y, int p, _c c) {
 
 }
 //affiche le serpent sur la grille
-void disp(List* list, _c c) {
+void disp(Options* ops, List* list, _c c) {
     List* cur = list;
     for (; cur != NULL; cur = cur->next) {
-        ghead(cur->x, cur->y, cur->c);
+        ghead(ops, cur->x, cur->y, cur->c);
+        #ifdef DEBUG
+            printf("x: %d, y: %d\n", cur->x, cur->y);
+        #endif /* DEBUG */
     }
+}
+
+void score(Options* ops, Garden* garden) {
+    char text[30];
+    sprintf(text, "score: %d", 5*garden->eaten);
+    int ww = WINDOW_WIDTH;
+    int wh = WINDOW_HEIGHT;
+    int wc = (ww-ops->width)/2;
+    int hc = (wh-ops->height)/2;
+    int s = 2;
+    int w = gstrSize(text, s) + 10;
+    int h = gtopFontSize(s) + gbotFontSize(s) + 10;
+    int x = ww - wc - w;
+    int y = wh - hc + h;
+    gchoose(grgb(25, 25, 25));
+    gfillRect(x, y, w, h);
+    gchoose(grgb(255, 255, 255));
+    gwrite(x, y, text, s);
+}
+
+void level(Options* ops, Garden* garden) {
+    char text[30];
+    sprintf(text, "Level: %d", garden->level);
+    int ww = WINDOW_WIDTH;
+    int wh = WINDOW_HEIGHT;
+    int wc = (ww-ops->width)/2;
+    int hc = (wh-ops->height)/2;
+    int s = 2;
+    int w = gstrSize(text, s) + 10;
+    int h = gtopFontSize(s) + gbotFontSize(s) + 10;
+    int x = wc;
+    int y = wh - hc + h;
+    gchoose(grgb(25, 25, 25));
+    gfillRect(x, y, w, h);
+    gchoose(grgb(255, 255, 255));
+    gwrite(x, y, text, s);
 }
 
 
 void dispgar(Garden* garden) {
     char format[30];
     sprintf(format, "l=%d; e=%d", garden->level, garden->eaten);
-    gwrite(0, HEIGHT-40, format, 2);
+    gwrite(0, WINDOW_HEIGHT-40, format, 2);
 }
 
 void dispsnk(Snake* snake) {
     char format[30];
-    sprintf(format, "l=%d; s=%d; w=%d", snake->length, snake->speed, snake->wheel);
-    gwrite(0, HEIGHT-20, format, 2);
+    sprintf(format, "l=%d; s=%d; w=%d; x=%d; y=%d;", snake->length, snake->speed, snake->wheel, snake->x, snake->y);
+    gwrite(0, WINDOW_HEIGHT-20, format, 2);
 }

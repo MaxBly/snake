@@ -1,3 +1,4 @@
+#include "menu.h"
 
 #ifndef GAME_H
 #define GAME_H
@@ -34,18 +35,21 @@ struct Garden {
 
 void    ggrid       (int, int, int, int, _c);
 int     ggetCoords  (int, int, int);
-void    ghead       (int, int, _c);
+void    ghead       (Options*, int, int, _c);
 _c      wheel       (int);
 
 Snake*  initSnake   (Snake*, int, int, int, int, int , int);
-Garden* initGarden  (Garden*, int, int);
+Garden* initGarden  (Garden*, Options*, int, int);
 Snake*  pause       (Snake*);
 
 List*   pushTop (List*, int, int, _c);
 List*   pushBot (List*, int, int, _c);
 List*   popBot  (List*);
 List*   push    (List*, int, int, int, _c);
-void    disp    (List*, _c);
+void    disp    (Options*, List*, _c);
+
+void    score   (Options*, Garden*);
+
 void    dispgar (Garden*);
 void    dispsnk (Snake*);
 
