@@ -172,7 +172,7 @@ void disp(Options* ops, List* list, _c c) {
 
 void score(Options* ops, Garden* garden) {
     char text[30];
-    sprintf(text, "score: %d", 5*garden->eaten);
+    sprintf(text, "Score: %d", 5*garden->eaten);
     int ww = WINDOW_WIDTH;
     int wh = WINDOW_HEIGHT;
     int wc = (ww-ops->width)/2;
@@ -181,11 +181,11 @@ void score(Options* ops, Garden* garden) {
     int w = gstrSize(text, s) + 10;
     int h = gtopFontSize(s) + gbotFontSize(s) + 10;
     int x = ww - wc - w;
-    int y = wh - hc + h;
-    gchoose(grgb(25, 25, 25));
+    int y = wh - hc;
+    gchoose(grgb(45, 45, 45));
     gfillRect(x, y, w, h);
     gchoose(grgb(255, 255, 255));
-    gwrite(x, y, text, s);
+    gwrite(x + 5, y + h/2, text, s);
 }
 
 void level(Options* ops, Garden* garden) {
@@ -199,11 +199,11 @@ void level(Options* ops, Garden* garden) {
     int w = gstrSize(text, s) + 10;
     int h = gtopFontSize(s) + gbotFontSize(s) + 10;
     int x = wc;
-    int y = wh - hc + h;
-    gchoose(grgb(25, 25, 25));
+    int y = wh - hc;
+    gchoose(grgb(45, 45, 45));
     gfillRect(x, y, w, h);
     gchoose(grgb(255, 255, 255));
-    gwrite(x, y, text, s);
+    gwrite(x + 5, y + h/2, text, s);
 }
 
 
