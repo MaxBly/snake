@@ -3,50 +3,201 @@
 #include <stdio.h>
 #include "functions.h"
 #include "game.h"
-
-#define     WIDTH   600 // largeur de la fenetre
-#define     HEIGHT  450 // hauteur
-#define     GRID    15  // taille de la grille (unité arbitraire / quotient)
-
-#define     DEBUG
+#include "main.h"
+#include "menu.h"
 
 int main(void) {
+    srand(gms());
     gbegin();
-    ginitWindow(100,100,WIDTH,HEIGHT);
-    gclear(grgb(0,0,0));
 
-    int running = 1; // tant que running est a 1 le programme continue
-    int x = 0, y = 0, //x, y correspodent a la grille 
-        xx = 0, yy = 0; // xx, yy correspondent aux coordonnée de pixel
-    //gchoose(grgb(255,0,0));
+    Options* ops = initOptions(ops, WIDTH, HEIGHT, GRID, CYCLE, APPLES, SNAKE);
 
-    while (running) {
-        gscreen(1); //basculage sur l'ecran fictif
-        gclear(grgb(0,0,0)); //clear l'ecran
-        ggrid(WIDTH, HEIGHT, WIDTH/GRID, HEIGHT/GRID, grgb(255,255,255)); // afficher la grille
-        gchoose(grgb(255,0,0)); // choisir la couleur rouge
-        xx = ggetCoords(WIDTH, GRID, x); //connaitre la position graphique de la case x
-        yy = ggetCoords(HEIGHT, GRID, y);
-        gfillRect(xx, yy, GRID, GRID); //afficher un carré rouge aux positions x, y
-        #ifdef DEBUG
-            printf("[%d|%d][%d|%d]\n", x, xx, y, yy);
-        #endif /* DEBUG */
+    ops->center_x = ops->width/ops->grid/2;
+    ops->center_y = ops->height/ops->grid/2;
+    ops->in_menu = 1;
+    ops->lastlvl = 0;
+    ops->lastscr = 0;
+    ginitWindow(100,1000,WINDOW_WIDTH,WINDOW_HEIGHT);
+    gclear(grgb(45,45,45));
+    Snake* snake = NULL;
+    Garden* garden = NULL;
 
+    unsigned long next = gms() + ops->cycle;
+    unsigned long nextframe = gms() + (60/ops->fps)*1000;
+    int menu = 0;
+    while (ops->running) {
+        if (gms() > nextframe) {
+            nextframe = gms() + (60/ops->fps)*1000;
+            gscreen(1);
+            gclear(grgb(45,45,45));
+            if (ops->in_game) {
+                ggrid(ops->width, ops->height, ops->width/ops->grid, ops->height/ops->grid, grgb(60,60,60));
 
+                if ((gms() > next) && snake->go_on) {
+                    next = gms() + (ops->cycle - (snake->speed*ops->cycle/20)*ops->speed/5);
 
+                    if ((snake->x + snake->dir_x < ops->width /ops->grid) && (snake->x + snake->dir_x >= 0)) snake->x = snake->x + snake->dir_x;
+                    if ((snake->y + snake->dir_y < ops->height/ops->grid) && (snake->y + snake->dir_y >= 0)) snake->y = snake->y + snake->dir_y;
+                    snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
+                    snake->tail = popBot (snake->tail);
+                    snake->wheel += 10;
+                    if (snake->wheel > 255) snake->wheel = 0;
+                    ops->lastscr = garden->eaten*5;
+                    ops->lastlvl = garden->level;
 
-        if (gdoKey()) { // si une touche est dispo
-            switch(ggetKey()) { //on teste la touche dispo, les variable XK_... sont definit dans <graph.h>
-                case XK_Escape: running = 0; break;
-                case XK_Left: if (x>0) x--; break;              //fleche gauche diminue x, si il est > a 0, pour ne pas sortir de la fenetre
-                case XK_Right: if (x<WIDTH/GRID-1) x++; break;  //fleche droite augment x si il est inférieut a la taille de la fenetre diviser par le coef de la grille, pour pas sortir
-                case XK_Down: if (y<HEIGHT/GRID-1) y++; break;  //meme principe pour le haut le bas
-                case XK_Up: if (y>0) y--; break;
+                    if (garden->apples == NULL) {
+                        garden = initGarden(garden, ops, garden->level + 1, garden->eaten);
+                        ops->lastscr = garden->eaten*5;
+                        ops->lastlvl = garden->level;
+                        snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake + garden->level, 1);
+                        snake->speed++;
+                    }
+                    if ((snake->tail->next->x + snake->dir_x >= ops->width /ops->grid) || (snake->tail->next->x + snake->dir_x == -1)
+                    ||  (snake->tail->next->y + snake->dir_y >= ops->height/ops->grid) || (snake->tail->next->y + snake->dir_y == -1)) {
+                        snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
+                        garden = initGarden(garden, ops, 0, 0);
+                    }
+                    for (List* cur = garden->obs; cur != NULL; cur = cur->next) {
+                        if (cur->x == snake->x && cur->y == snake->y) {
+                            snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
+                            garden = initGarden(garden, ops, 0, 0);
+                        }
+                    }
+                    if (snake->tail != NULL) {
+                        List* cur = snake->tail->next;
+                        for(; cur->next != NULL; cur = cur->next) {
+                            if ((cur->x == snake->tail->x) && (cur->y == snake->tail->y)) {
+                                snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
+                                garden = initGarden(garden, ops, 0, 0);
+                            }
+                        }
+                    }
+                    for (List* cur = garden->apples; cur != NULL; cur = cur->next) {
+                        if (cur->x == snake->x && cur->y == snake->y) {
+                            if ((cur->prev != NULL) && (cur->next != NULL)) {
+                                cur->prev->next = cur->next;
+                                cur->next->prev = cur->prev;
+                            } else if ((cur->next == NULL) && (cur->prev != NULL)) {
+                                cur->prev->next = NULL;
+                                free(cur);
+                            } else if ((cur->prev == NULL) && (cur->next != NULL)) {
+                                garden->apples = cur->next;
+                                garden->apples->prev = NULL;
+                                free(cur);
+                            } else {
+                                garden->apples = NULL;
+                            }
+                            garden->eaten++;
+                            snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
+                            snake->tail = pushTop(snake->tail, snake->x, snake->y, wheel(snake->wheel));
+                            snake->length+=2;
+                            break;
+                        }
+                    }
+                }
+                disp(ops, snake->tail, wheel(snake->wheel));
+                if (garden->apples) disp(ops, garden->apples, wheel(snake->wheel));
+                if (garden->obs) disp(ops, garden->obs, wheel(snake->wheel));
+                //score(ops, garden);
+                #ifdef DEBUG
+                    dispsnk(snake);
+                    dispgar(garden);
+                #endif /* DEBUG */
+                if (gdoKey()) {
+                    switch(ggetKey()) {
+                        case XK_Escape: ops->in_game = 0; ops->in_menu = 1;                             break;
+                        case XK_space:  snake = pause(snake);                                           break;
+                        case XK_Left:   if (snake->dir_x !=  1) snake->dir_x = -1, snake->dir_y = 0;    break;
+                        case XK_Right:  if (snake->dir_x != -1) snake->dir_x =  1, snake->dir_y = 0;    break;
+                        case XK_Down:   if (snake->dir_y != -1) snake->dir_y =  1, snake->dir_x = 0;    break;
+                        case XK_Up:     if (snake->dir_y !=  1) snake->dir_y = -1, snake->dir_x = 0;    break;
+                    }
+                }
+            gcopy(1, 0, 0, 0, ops->width, ops->height, (WINDOW_WIDTH - ops->width)/2, (WINDOW_HEIGHT - ops->height)/2);
+            gscreen(0);
+            score(ops, garden);
+            level(ops, garden);
+            if (!snake->go_on) {
+                char text[30];
+                sprintf(text, "Score: %d    Level: %d", ops->lastscr, ops->lastlvl);
+                btn(4, text, grgb(45, 45, 45), grgb(255, 255, 255), 1, 1);
             }
+            gscreen(1);
+            } else if (ops->in_menu) {
 
-        }
 
-        gcopy(1,0,0,0,WIDTH,HEIGHT,0,0);// bascule l'ecran fictif sur l'ecran affiché
+                btn(2, "PLAY",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0), 0);
+                btn(4, "OPTIONS",   grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1), 0);
+                btn(6, "QUIT",      grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2), 0);
+                if(gdoKey()) {
+                    switch(ggetKey()) {
+                        case XK_Escape: ops->running = 0;   break;
+                        case XK_Up:   if(menu > 0) menu--; break;
+                        case XK_Down: if(menu < 2) menu++; break;
+                        case XK_Return:
+                            switch(menu) {
+                                case 0:
+                                    ops->in_menu = 0;
+                                    ops->center_x = ops->width/ops->grid/2;
+                                    ops->center_y = ops->height/ops->grid/2;
+                                    snake = initSnake(snake, ops->center_x, ops->center_y, 0, 0, ops->snake, 1);
+                                    garden = initGarden(garden, ops, 0, 0);
+                                    ops->in_game = 1;
+                                break;
+                                case 1:
+                                    ops->in_menu = 0;
+                                    ops->in_opts = 1;
+                                break;
+                                case 2:
+                                    ops->running = 0;
+                                break;
+                            }
+                        break;
+                    }
+                }
+                gcopy(1, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+            } else if (ops->in_opts) {
+                btnScroll(3,  "LENGHT", ops->snake , grgb(0, 0, 0), grgb(255, 255, 255), (menu == 0));
+                btnScroll(5,  "APPLES", ops->apples, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 1));
+                btnScroll(7,  "GRID"  , ops->grid  , grgb(0, 0, 0), grgb(255, 255, 255), (menu == 2));
+                btnScroll(9,  "WIDTH" , ops->width /ops->grid, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 3));
+                btnScroll(11, "HEIGHT", ops->height/ops->grid, grgb(0, 0, 0), grgb(255, 255, 255), (menu == 4));
+                btnScroll(13, "FPS"   , ops->fps,    grgb(0, 0, 0), grgb(255, 255, 255), (menu == 5));
+                btnScroll(15, "SPEED" , ops->speed,  grgb(0, 0, 0), grgb(255, 255, 255), (menu == 6));
+                if(gdoKey()) {
+                    switch(ggetKey()) {
+                        case XK_Escape: ops->in_opts = 0; ops->in_menu = 1; menu = 0; break;
+                        case XK_Up:     if(menu > 0) menu--; break;
+                        case XK_Down:   if(menu < 6) menu++; break;
+                        case XK_Right:
+                            switch(menu) {
+                                case 0: ops->snake++ ; break;
+                                case 1: ops->apples++; break;
+                                case 2: ops->grid++  ; break;
+                                case 3: ops->width  += ops->grid; break;
+                                case 4: ops->height += ops->grid; break;
+                                case 5: ops->fps++; break;
+                                case 6: ops->speed++; break;
+                            }
+                        break;
+                        case XK_Left:
+                            switch(menu) {
+                                case 0: ops->snake-- ; break;
+                                case 1: ops->apples--; break;
+                                case 2: ops->grid--  ; break;
+                                case 3: ops->width  -= ops->grid; break;
+                                case 4: ops->height -= ops->grid; break;
+                                case 5: ops->fps--; break;
+                                case 6: ops->speed--; break;
+                            }
+                        break;
+                        case XK_Return:
+                        break;
+                    }
+                }
+                gcopy(1, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+            }
+        }//nextframe
     }
 
     return 0;
